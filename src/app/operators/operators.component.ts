@@ -19,6 +19,9 @@ export class OperatorsComponent implements OnInit {
     this.firstFromExample();
     this.secondFromExample();
     this.thirdFromExample();
+
+    this.firstOfExample();
+    this.secondOfExample();
   }
 
   /**
@@ -75,6 +78,22 @@ export class OperatorsComponent implements OnInit {
 
   thirdFromExample() {
     const source = from('Hello World');
+
+    const subscribe = source.subscribe(val => this.addItem(val));
+  }
+
+  /**
+   * OF
+   * Emite uma quantidade variável de valores em uma sequência e emite uma notificação completa
+   */
+  firstOfExample() {
+    const source = of(1, 2, 3, 4, 5);
+
+    const subscribe = source.subscribe(val => this.addItem(val));
+  }
+
+  secondOfExample() {
+    const source = of({ name: 'Brian' }, [1, 2, 3], function hello() { return 'Hello' });
 
     const subscribe = source.subscribe(val => this.addItem(val));
   }
