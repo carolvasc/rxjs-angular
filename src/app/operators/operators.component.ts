@@ -11,14 +11,20 @@ export class OperatorsComponent implements OnInit {
 
   constructor() { }
 
-  observable = new Observable();
-
   ngOnInit() {
     this.firstMapExample();
     this.secondMapExample();
     this.thirdMapExample();
+
+    this.firstFromExample();
+    this.secondFromExample();
+    this.thirdFromExample();
   }
 
+  /**
+   * MAP
+   * Aplica projeção em cada valor dos dados fornecidos
+   */
   firstMapExample() {
     const source = from([1, 2, 3, 4, 5]);
 
@@ -39,12 +45,38 @@ export class OperatorsComponent implements OnInit {
     const subscribe = example.subscribe(val => this.addItem(val));
   }
 
-  thirdMapExample(){
+  thirdMapExample() {
     const source = of(2, 4, 6);
 
     const example = source.pipe(map((x: number) => x * x));
 
     const subscribe = example.subscribe(val => this.addItem(val));
+  }
+
+  /**
+   * FROM
+   * Transforma array, promise ou iteraveis em um Observable
+   */
+  firstFromExample() {
+    const promiseSource = from(new Promise(resolve => resolve('Hello World')));
+
+    const subscribe = promiseSource.subscribe(val => this.addItem(val));
+  }
+
+  secondFromExample() {
+    const map = new Map();
+    map.set(1, 'Hi');
+    map.set(2, 'Bye');
+
+    const mapSource = from(map);
+
+    const subscribe = mapSource.subscribe(val => this.addItem(val));
+  }
+
+  thirdFromExample() {
+    const source = from('Hello World');
+
+    const subscribe = source.subscribe(val => this.addItem(val));
   }
 
   addItem(value: any) {
