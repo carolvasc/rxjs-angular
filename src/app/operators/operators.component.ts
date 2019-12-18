@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { of, Observable, from } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { of, Observable, from, interval } from 'rxjs';
+import { map, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-operators',
@@ -22,6 +22,10 @@ export class OperatorsComponent implements OnInit {
 
     this.firstOfExample();
     this.secondOfExample();
+
+    this.firstFilterExample();
+    this.secondFilterExample();
+    this.thirdFilterExample();
   }
 
   /**
@@ -98,6 +102,40 @@ export class OperatorsComponent implements OnInit {
     const subscribe = source.subscribe(val => this.addItem(val));
   }
 
+  /**
+   * FILTER
+   * Emite valores que passam de determianda condição
+   */
+  firstFilterExample() {
+    const source = from([1, 2, 3, 4, 5]);
+
+    const example = source.pipe(filter((num => num % 2 === 0)));
+
+    const subscribe = example.subscribe(val => this.addItem(val));
+  }
+
+  secondFilterExample() {
+    const source = from([
+      { name: 'Joe', age: 31 },
+      { name: 'Bob', age: 25 },
+      { name: 'Emily', age: 35 }
+    ]);
+
+    const example = source.pipe(filter(person => person.age >= 30));
+
+    const subscribe = example.subscribe(val => this.addItem(`Over 30: ${val.name}`));
+  }
+
+  thirdFilterExample(){
+    const source = interval(1000);
+
+    const example = source.pipe(filter(num => num < 5));
+
+    const subscribe = example.subscribe(val => this.addItem(`Number less than 5: ${val}`));
+  }
+
+
+  
   addItem(value: any) {
     let node = document.createElement("li");
     let textNode = document.createTextNode(value);
