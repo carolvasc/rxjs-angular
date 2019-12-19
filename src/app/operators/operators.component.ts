@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { of, Observable, from, interval } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
+import { of, Observable, from, interval, fromEvent } from 'rxjs';
+import { map, filter, pluck } from 'rxjs/operators';
 
 @Component({
   selector: 'app-operators',
@@ -12,20 +12,24 @@ export class OperatorsComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this.firstMapExample();
-    this.secondMapExample();
-    this.thirdMapExample();
+    // this.firstMapExample();
+    // this.secondMapExample();
+    // this.thirdMapExample();
 
-    this.firstFromExample();
-    this.secondFromExample();
-    this.thirdFromExample();
+    // this.firstFromExample();
+    // this.secondFromExample();
+    // this.thirdFromExample();
 
-    this.firstOfExample();
-    this.secondOfExample();
+    // this.firstOfExample();
+    // this.secondOfExample();
 
-    this.firstFilterExample();
-    this.secondFilterExample();
-    this.thirdFilterExample();
+    // this.firstFilterExample();
+    // this.secondFilterExample();
+    // this.thirdFilterExample();
+
+    this.firstPluckExample();
+    this.secondPluckExample();
+    this.thirdPluckExample();
   }
 
   /**
@@ -37,7 +41,7 @@ export class OperatorsComponent implements OnInit {
 
     const example = source.pipe(map((val: number) => val + 10));
 
-    const subscribe = example.subscribe(val => this.addItem(val));
+    example.subscribe(val => this.addItem(val));
   }
 
   secondMapExample() {
@@ -49,7 +53,7 @@ export class OperatorsComponent implements OnInit {
 
     const example = source.pipe(map(({ name }) => name));
 
-    const subscribe = example.subscribe(val => this.addItem(val));
+    example.subscribe(val => this.addItem(val));
   }
 
   thirdMapExample() {
@@ -57,7 +61,7 @@ export class OperatorsComponent implements OnInit {
 
     const example = source.pipe(map((x: number) => x * x));
 
-    const subscribe = example.subscribe(val => this.addItem(val));
+    example.subscribe(val => this.addItem(val));
   }
 
   /**
@@ -67,7 +71,7 @@ export class OperatorsComponent implements OnInit {
   firstFromExample() {
     const promiseSource = from(new Promise(resolve => resolve('Hello World')));
 
-    const subscribe = promiseSource.subscribe(val => this.addItem(val));
+    promiseSource.subscribe(val => this.addItem(val));
   }
 
   secondFromExample() {
@@ -77,13 +81,13 @@ export class OperatorsComponent implements OnInit {
 
     const mapSource = from(map);
 
-    const subscribe = mapSource.subscribe(val => this.addItem(val));
+    mapSource.subscribe(val => this.addItem(val));
   }
 
   thirdFromExample() {
     const source = from('Hello World');
 
-    const subscribe = source.subscribe(val => this.addItem(val));
+    source.subscribe(val => this.addItem(val));
   }
 
   /**
@@ -93,13 +97,13 @@ export class OperatorsComponent implements OnInit {
   firstOfExample() {
     const source = of(1, 2, 3, 4, 5);
 
-    const subscribe = source.subscribe(val => this.addItem(val));
+    source.subscribe(val => this.addItem(val));
   }
 
   secondOfExample() {
     const source = of({ name: 'Brian' }, [1, 2, 3], function hello() { return 'Hello' });
 
-    const subscribe = source.subscribe(val => this.addItem(val));
+    source.subscribe(val => this.addItem(val));
   }
 
   /**
@@ -111,7 +115,7 @@ export class OperatorsComponent implements OnInit {
 
     const example = source.pipe(filter((num => num % 2 === 0)));
 
-    const subscribe = example.subscribe(val => this.addItem(val));
+    example.subscribe(val => this.addItem(val));
   }
 
   secondFilterExample() {
@@ -123,19 +127,54 @@ export class OperatorsComponent implements OnInit {
 
     const example = source.pipe(filter(person => person.age >= 30));
 
-    const subscribe = example.subscribe(val => this.addItem(`Over 30: ${val.name}`));
+    example.subscribe(val => this.addItem(`Over 30: ${val.name}`));
   }
 
-  thirdFilterExample(){
+  thirdFilterExample() {
     const source = interval(1000);
 
     const example = source.pipe(filter(num => num < 5));
 
-    const subscribe = example.subscribe(val => this.addItem(`Number less than 5: ${val}`));
+    example.subscribe(val => this.addItem(`Number less than 5: ${val}`));
   }
 
+  /**
+   * PLUCK
+   * Mapeia casa valor de origem (de um objeto) para sua propriedade aninhada especificada.
+   */
+  firstPluckExample() {
+    const source = from([
+      { name: 'Joe', age: 30 },
+      { name: 'Sarah', age: 35 }
+    ]);
 
-  
+    const example = source.pipe(pluck('name'));
+
+    example.subscribe(val => this.addItem(val));
+  }
+
+  secondPluckExample() {
+    const source = from([
+      { name: 'Joe', age: 30, job: { title: 'Developer', language: 'JavaScript' } },
+      { name: 'Sarah', age: 35 }
+    ]);
+
+    const example = source.pipe(
+      filter(val => val.job !== undefined),
+      pluck('job', 'title')
+    );
+
+    example.subscribe(val => this.addItem(val));
+  }
+
+  thirdPluckExample() {
+    const source = fromEvent(document, 'click');
+
+    const example = source.pipe(pluck('target', 'tagName'));
+
+    example.subscribe(val => this.addItem(val));
+  }
+
   addItem(value: any) {
     let node = document.createElement("li");
     let textNode = document.createTextNode(value);
