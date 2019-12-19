@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { of, Observable, from, interval, fromEvent, merge } from 'rxjs';
-import { map, filter, pluck, mapTo } from 'rxjs/operators';
+import { map, filter, pluck, mapTo, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-operators',
@@ -27,15 +27,17 @@ export class OperatorsComponent implements OnInit {
     // this.secondFilterExample();
     // this.thirdFilterExample();
 
-    this.firstPluckExample();
-    this.secondPluckExample();
-    this.thirdPluckExample();
+    // this.firstPluckExample();
+    // this.secondPluckExample();
+    // this.thirdPluckExample();
 
-    this.firstFromEventExample();
-    this.secondFromEventExample();
+    // this.firstFromEventExample();
+    // this.secondFromEventExample();
 
-    this.firstMergeExample();
-    this.secondMergeExample();
+    // this.firstMergeExample();
+    // this.secondMergeExample();
+
+    this.firstSwitchMapExample();
   }
 
   /**
@@ -232,6 +234,19 @@ export class OperatorsComponent implements OnInit {
     const results = merge(obs, obs2);
 
     results.subscribe(val => this.addItem(val));
+  }
+
+  /**
+   * SWITCHMAP
+   * Projeta cada valor de origem em um Observable que é mesclado no Observable de saída,
+   * emitindo valores apenas do Observable mais recente.
+   */
+  firstSwitchMapExample() {
+    const subscription = fromEvent(document, 'click')
+      .pipe(switchMap(() => interval(1000)))
+      .subscribe(val => this.addItem(val));
+
+    setTimeout(() => subscription.unsubscribe(), 10000);
   }
 
   addItem(value: any) {
