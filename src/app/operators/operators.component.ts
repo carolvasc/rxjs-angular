@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { of, Observable, from, interval, fromEvent } from 'rxjs';
-import { map, filter, pluck } from 'rxjs/operators';
+import { of, Observable, from, interval, fromEvent, merge } from 'rxjs';
+import { map, filter, pluck, mapTo } from 'rxjs/operators';
 
 @Component({
   selector: 'app-operators',
@@ -33,6 +33,9 @@ export class OperatorsComponent implements OnInit {
 
     this.firstFromEventExample();
     this.secondFromEventExample();
+
+    this.firstMergeExample();
+    this.secondMergeExample();
   }
 
   /**
@@ -198,6 +201,37 @@ export class OperatorsComponent implements OnInit {
     const example = source.pipe(map(val => '10 pontos para a Grifinória'));
 
     example.subscribe(val => this.addItem(val));
+  }
+
+  /**
+   * MERGE
+   * Transforma multiplos Observables em apenas um
+   */
+  firstMergeExample() {
+    const first = interval(2500);
+    const second = interval(2000);
+    const third = interval(1500);
+    const fourth = interval(1000);
+
+    const example = merge(
+      first.pipe(mapTo(`Primeiro`)),
+      second.pipe(mapTo(`Segundo`)),
+      third.pipe(mapTo(`Terceiro`)),
+      fourth.pipe(mapTo(`Quarto`)),
+    );
+
+    const subscription = example.subscribe(val => this.addItem(val));
+
+    setTimeout(() => subscription.unsubscribe(), 10000);
+  }
+
+  secondMergeExample() {
+    const obs = new Observable(item => item.next('Obs1'));
+    const obs2 = new Observable(item => item.next('Obs2'));
+
+    const results = merge(obs, obs2);
+
+    results.subscribe(val => this.addItem(val));
   }
 
   addItem(value: any) {
