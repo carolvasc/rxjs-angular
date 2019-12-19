@@ -30,6 +30,9 @@ export class OperatorsComponent implements OnInit {
     this.firstPluckExample();
     this.secondPluckExample();
     this.thirdPluckExample();
+
+    this.firstFromEventExample();
+    this.secondFromEventExample();
   }
 
   /**
@@ -171,6 +174,28 @@ export class OperatorsComponent implements OnInit {
     const source = fromEvent(document, 'click');
 
     const example = source.pipe(pluck('target', 'tagName'));
+
+    example.subscribe(val => this.addItem(val));
+  }
+
+
+  /**
+   * FROMEVENT
+   * Cria um Observable que emite eventos de um tipo especifico
+   */
+  firstFromEventExample() {
+    const source = fromEvent(document, 'click');
+
+    const example = source.pipe(map(event => `Event time: ${event.timeStamp}`));
+
+    example.subscribe(val => this.addItem(val));
+  }
+
+  secondFromEventExample() {
+    const button = document.querySelector('button');
+    const source = fromEvent(button, 'click');
+
+    const example = source.pipe(map(val => '10 pontos para a Grifinória'));
 
     example.subscribe(val => this.addItem(val));
   }
