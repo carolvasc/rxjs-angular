@@ -37,9 +37,9 @@ export class OperatorsComponent implements OnInit {
     // this.firstMergeExample();
     // this.secondMergeExample();
 
-    this.firstSwitchMapExample();
+    // this.firstSwitchMapExample();
 
-    this.firstMergeMapExample();
+    // this.firstMergeMapExample();
   }
 
   /**
