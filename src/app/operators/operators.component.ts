@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { of, Observable, from, interval, fromEvent, merge } from 'rxjs';
-import { map, filter, pluck, mapTo, switchMap } from 'rxjs/operators';
+import { map, filter, pluck, mapTo, switchMap, mergeMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-operators',
@@ -38,6 +38,8 @@ export class OperatorsComponent implements OnInit {
     // this.secondMergeExample();
 
     this.firstSwitchMapExample();
+
+    this.firstMergeMapExample();
   }
 
   /**
@@ -247,6 +249,17 @@ export class OperatorsComponent implements OnInit {
       .subscribe(val => this.addItem(val));
 
     setTimeout(() => subscription.unsubscribe(), 10000);
+  }
+
+  /**
+   * MERGEMAP
+   */
+  firstMergeMapExample() {
+    const source = of('a', 'b', 'c');
+
+    const example = source.pipe(mergeMap(x => interval(1000).pipe(map(i => x + 1))));
+
+    example.subscribe(x => this.addItem(x));
   }
 
   addItem(value: any) {
