@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Subject, from } from 'rxjs';
+import { Subject, from, ConnectableObservable } from 'rxjs';
+import { multicast } from 'rxjs/operators';
 
 @Component({
   selector: 'app-subject',
@@ -53,7 +54,7 @@ export class SubjectComponent implements OnInit {
       next: (v) => this.addItem(`observerB: ${v}`)
     });
 
-    multicasted.connect();
+    (multicasted as ConnectableObservable<number>).connect();
   }
 
   addItem(value: any) {
