@@ -13,8 +13,9 @@ export class SubjectComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this.firstExample();
-    this.secondExample();
+    // this.firstExample();
+    // this.secondExample();
+    this.multicastedSubject();
   }
 
   createObservable(name: String) {
@@ -40,6 +41,20 @@ export class SubjectComponent implements OnInit {
     observable.subscribe(this.subject);
   }
 
+  multicastedSubject() {
+    const source = from([1, 2, 3]);
+    const subject = new Subject();
+    const multicasted = source.pipe(multicast(subject));
+
+    multicasted.subscribe({
+      next: (v) => this.addItem(`observerA: ${v}`)
+    });
+    multicasted.subscribe({
+      next: (v) => this.addItem(`observerB: ${v}`)
+    });
+
+    multicasted.connect();
+  }
 
   addItem(value: any) {
     let node = document.createElement("li");
