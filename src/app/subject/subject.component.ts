@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Subject, from, ConnectableObservable, BehaviorSubject } from 'rxjs';
-import { multicast } from 'rxjs/operators';
+import { Subject, from, ConnectableObservable, BehaviorSubject, fromEvent, interval, merge } from 'rxjs';
+import { multicast, map, tap, mergeMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-subject',
@@ -11,13 +11,30 @@ export class SubjectComponent implements OnInit {
 
   subject = new Subject<number>();
 
+  addHtmlElement = coords =>
+    (document.body.innerHTML += `
+  <div 
+    id=${coords.id}
+    style="
+      position: absolute;
+      height: 30px;
+      width: 30px;
+      text-align: center;
+      top: ${coords.y}px;
+      left: ${coords.x}px;
+      background: silver;
+      border-radius: 80%;"
+    >
+  </div>`);
+
   constructor() { }
 
   ngOnInit() {
     // this.firstExample();
     // this.secondExample();
     // this.multicastedSubject();
-    this.behaviorSubject();
+    // this.behaviorSubject();
+    this.behaviorSubject2();
   }
 
   createObservable(name: String) {
@@ -73,6 +90,31 @@ export class SubjectComponent implements OnInit {
     });
 
     subject.next(3);
+  }
+
+  behaviorSubject2() {
+    const setElementText = (elemId = 'output', text) =>
+      (document.getElementById(elemId).innerText = text.toString());
+
+
+    const subject = new BehaviorSubject(0);
+
+    const click$ = fromEvent(document, 'click').pipe(
+      map((e: MouseEvent) => ({
+        x: e.clientX,
+        y: e.clientY,
+        id: Math.random()
+      })),
+      tap(this.addHtmlElement),
+      mergeMap(coords => subject.pipe(tap(v => setElementText(coords.id, v))))
+    );
+
+    const interval$ = interval(1000).pipe(
+      tap(v => subject.next(v)),
+      tap(v => setElementText('intervalValue', v))
+    );
+
+    merge(click$, interval$).subscribe();
   }
 
   addItem(value: any) {
