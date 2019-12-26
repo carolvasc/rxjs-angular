@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Subject, from, ConnectableObservable, BehaviorSubject, fromEvent, interval, merge, AsyncSubject } from 'rxjs';
+import { Subject, from, ConnectableObservable, BehaviorSubject, fromEvent, interval, merge, AsyncSubject, ReplaySubject } from 'rxjs';
 import { multicast, map, tap, mergeMap } from 'rxjs/operators';
 
 @Component({
@@ -35,8 +35,9 @@ export class SubjectComponent implements OnInit {
     // this.multicastedSubject();
     // this.behaviorSubject();
     // this.behaviorSubject2();
-    this.asyncSubject();
-    this.asyncSubject2();
+    // this.asyncSubject();
+    // this.asyncSubject2();
+    this.replaySubject();
   }
 
   createObservable(name: String) {
@@ -162,6 +163,18 @@ export class SubjectComponent implements OnInit {
 
     subject.next(Math.random());
     subject.complete();
+  }
+
+  replaySubject() {
+    const sub = new ReplaySubject(3);
+
+    sub.next(1);
+    sub.next(2);
+    sub.subscribe({ next: (v) => this.addItem(v) });
+    sub.next(3);
+    sub.next(4);
+    sub.subscribe({ next: (v) => this.addItem(v) });
+    sub.next(5);
   }
 
   addItem(value: any) {
