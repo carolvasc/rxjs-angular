@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Subject, from, ConnectableObservable, BehaviorSubject, fromEvent, interval, merge } from 'rxjs';
+import { Subject, from, ConnectableObservable, BehaviorSubject, fromEvent, interval, merge, AsyncSubject } from 'rxjs';
 import { multicast, map, tap, mergeMap } from 'rxjs/operators';
 
 @Component({
@@ -34,7 +34,8 @@ export class SubjectComponent implements OnInit {
     // this.secondExample();
     // this.multicastedSubject();
     // this.behaviorSubject();
-    this.behaviorSubject2();
+    // this.behaviorSubject2();
+    this.asyncSubject();
   }
 
   createObservable(name: String) {
@@ -93,6 +94,19 @@ export class SubjectComponent implements OnInit {
   }
 
   behaviorSubject2() {
+    const subject = new BehaviorSubject(123);
+
+    subject.subscribe({ next: (v) => this.addItem(v) });
+    subject.subscribe({ next: (v) => this.addItem(v) });
+
+    subject.next(456);
+
+    subject.subscribe({ next: (v) => this.addItem(v) });
+
+    subject.next(789);
+  }
+
+  behaviorSubject3() {
     const setElementText = (elemId = 'output', text) =>
       (document.getElementById(elemId).innerText = text.toString());
 
@@ -115,6 +129,19 @@ export class SubjectComponent implements OnInit {
     );
 
     merge(click$, interval$).subscribe();
+  }
+
+  asyncSubject() {
+    const sub = new AsyncSubject();
+
+    sub.subscribe({ next: (v) => this.addItem(v) });
+
+    sub.next(123);
+
+    sub.subscribe({ next: (v) => this.addItem(v) });
+
+    sub.next(456);
+    sub.complete();
   }
 
   addItem(value: any) {
