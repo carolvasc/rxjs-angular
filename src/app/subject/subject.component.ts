@@ -36,6 +36,7 @@ export class SubjectComponent implements OnInit {
     // this.behaviorSubject();
     // this.behaviorSubject2();
     this.asyncSubject();
+    this.asyncSubject2();
   }
 
   createObservable(name: String) {
@@ -142,6 +143,25 @@ export class SubjectComponent implements OnInit {
 
     sub.next(456);
     sub.complete();
+  }
+
+  asyncSubject2() {
+    const subject = new AsyncSubject();
+
+    subject.subscribe((data) => {
+      this.addItem('Subscriber A: ' + data);
+    });
+
+    subject.next(Math.random())
+    subject.next(Math.random())
+    subject.next(Math.random())
+
+    subject.subscribe((data) => {
+      this.addItem('Subscriber B: ' + data);
+    });
+
+    subject.next(Math.random());
+    subject.complete();
   }
 
   addItem(value: any) {
