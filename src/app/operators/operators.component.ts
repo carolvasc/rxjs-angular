@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { of, Observable, from, interval, fromEvent, merge } from 'rxjs';
-import { map, filter, pluck, mapTo, switchMap, mergeMap } from 'rxjs/operators';
+import { map, filter, pluck, mapTo, switchMap, mergeMap, take, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-operators',
@@ -40,6 +40,10 @@ export class OperatorsComponent implements OnInit {
     // this.firstSwitchMapExample();
 
     // this.firstMergeMapExample();
+
+    this.firstTakeExample();
+    this.secondTakeExample();
+    // this.thirdTakeExample();
   }
 
   /**
@@ -261,6 +265,38 @@ export class OperatorsComponent implements OnInit {
 
     example.subscribe(x => this.addItem(x));
   }
+
+  /**
+   * TAKE
+   */
+  firstTakeExample() {
+    const source = of(1, 2, 3, 4, 5);
+
+    const example = source.pipe(take(1));
+
+    const subscribe = example.subscribe(val => this.addItem(val));
+  }
+
+  secondTakeExample() {
+    const interval$ = interval(1000);
+
+    const example = interval$.pipe(take(5));
+
+    const subscribe = example.subscribe(val => this.addItem(val));
+  }
+
+  // thirdTakeExample() {
+  //   const oneClickEvent = fromEvent(document, 'click').pipe(
+  //     take(1),
+  //     tap(v => {
+  //       document.getElementById(
+  //         'locationDisplay'
+  //       ).innerHTML = `Your first click was on location ${v.screenX}:${v.screenY}`;
+  //     })
+  //   );
+    
+  //   const subscribe = oneClickEvent.subscribe();
+  // }
 
   addItem(value: any) {
     let node = document.createElement("li");
