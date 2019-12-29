@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { of, Observable, from, interval, fromEvent, merge } from 'rxjs';
-import { map, filter, pluck, mapTo, switchMap, mergeMap, take, tap } from 'rxjs/operators';
+import { of, Observable, from, interval, fromEvent, merge, timer } from 'rxjs';
+import { map, filter, pluck, mapTo, switchMap, mergeMap, take, tap, withLatestFrom, takeUntil, scan } from 'rxjs/operators';
 
 @Component({
   selector: 'app-operators',
@@ -41,13 +41,15 @@ export class OperatorsComponent implements OnInit {
 
     // this.firstMergeMapExample();
 
-    this.firstTakeExample();
-    this.secondTakeExample();
-    // this.thirdTakeExample();
+    // this.firstTakeExample();
+    // this.secondTakeExample();
+
+    this.firstTakeUntilExample();
+    this.secondTakeUntilExample();
   }
 
   /**
-   * MAP
+   * map()
    * Aplica projeção em cada valor dos dados fornecidos
    */
   firstMapExample() {
@@ -79,7 +81,7 @@ export class OperatorsComponent implements OnInit {
   }
 
   /**
-   * FROM
+   * from()
    * Transforma array, promise ou iteraveis em um Observable
    */
   firstFromExample() {
@@ -105,7 +107,7 @@ export class OperatorsComponent implements OnInit {
   }
 
   /**
-   * OF
+   * of()
    * Emite uma quantidade variável de valores em uma sequência e emite uma notificação completa
    */
   firstOfExample() {
@@ -121,7 +123,7 @@ export class OperatorsComponent implements OnInit {
   }
 
   /**
-   * FILTER
+   * filter()
    * Emite valores que passam de determianda condição
    */
   firstFilterExample() {
@@ -153,7 +155,7 @@ export class OperatorsComponent implements OnInit {
   }
 
   /**
-   * PLUCK
+   * pluck()
    * Mapeia casa valor de origem (de um objeto) para sua propriedade aninhada especificada.
    */
   firstPluckExample() {
@@ -191,7 +193,7 @@ export class OperatorsComponent implements OnInit {
 
 
   /**
-   * FROMEVENT
+   * fromEvent()
    * Cria um Observable que emite eventos de um tipo especifico
    */
   firstFromEventExample() {
@@ -212,7 +214,7 @@ export class OperatorsComponent implements OnInit {
   }
 
   /**
-   * MERGE
+   * merge()
    * Transforma multiplos Observables em apenas um
    */
   firstMergeExample() {
@@ -243,7 +245,7 @@ export class OperatorsComponent implements OnInit {
   }
 
   /**
-   * SWITCHMAP
+   * switchMap()
    * Projeta cada valor de origem em um Observable que é mesclado no Observable de saída,
    * emitindo valores apenas do Observable mais recente.
    */
@@ -256,7 +258,7 @@ export class OperatorsComponent implements OnInit {
   }
 
   /**
-   * MERGEMAP
+   * mergeMap()
    */
   firstMergeMapExample() {
     const source = of('a', 'b', 'c');
@@ -267,7 +269,7 @@ export class OperatorsComponent implements OnInit {
   }
 
   /**
-   * TAKE
+   * take()
    */
   firstTakeExample() {
     const source = of(1, 2, 3, 4, 5);
@@ -285,18 +287,41 @@ export class OperatorsComponent implements OnInit {
     const subscribe = example.subscribe(val => this.addItem(val));
   }
 
-  // thirdTakeExample() {
-  //   const oneClickEvent = fromEvent(document, 'click').pipe(
-  //     take(1),
-  //     tap(v => {
-  //       document.getElementById(
-  //         'locationDisplay'
-  //       ).innerHTML = `Your first click was on location ${v.screenX}:${v.screenY}`;
-  //     })
-  //   );
-    
-  //   const subscribe = oneClickEvent.subscribe();
-  // }
+  /**
+   * takeUntil()
+   * 
+   */
+  firstTakeUntilExample() {
+    const source = interval(1000);
+
+    const timer$ = timer(5000);
+
+    const example = source.pipe(takeUntil(timer$));
+
+    const subscribe = example.subscribe(val => this.addItem(val));
+  }
+
+  secondTakeUntilExample() {
+    const source = interval(1000);
+
+    const isEven = val => val % 2 === 0;
+
+    const evenSource = source.pipe(filter(isEven));
+
+    const evenNumberCount = evenSource.pipe(scan((acc, _) => acc + 1, 0));
+
+    const fiveEvenNumbers = evenNumberCount.pipe(filter(val => val > 5));
+
+    const example = evenSource.pipe(
+
+      withLatestFrom(evenNumberCount),
+      map(([val, count]) => `Even number (${count}) : ${val}`),
+
+      takeUntil(fiveEvenNumbers)
+    );
+
+    const subscribe = example.subscribe(val => this.addItem(val));
+  }
 
   addItem(value: any) {
     let node = document.createElement("li");
