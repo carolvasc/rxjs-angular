@@ -259,6 +259,7 @@ export class OperatorsComponent implements OnInit {
 
   /**
    * mergeMap()
+   * Mapeia para Observable, emite valores
    */
   firstMergeMapExample() {
     const source = of('a', 'b', 'c');
@@ -270,6 +271,7 @@ export class OperatorsComponent implements OnInit {
 
   /**
    * take()
+   * Emite o número de valores fornecido antes de concluir
    */
   firstTakeExample() {
     const source = of(1, 2, 3, 4, 5);
@@ -289,7 +291,7 @@ export class OperatorsComponent implements OnInit {
 
   /**
    * takeUntil()
-   * 
+   * Emite valores até que sejam emitidas os Observables.
    */
   firstTakeUntilExample() {
     const source = interval(1000);
