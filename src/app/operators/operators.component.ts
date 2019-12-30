@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { of, Observable, from, interval, fromEvent, merge, timer, Subject } from 'rxjs';
+import { of, Observable, from, interval, fromEvent, merge, timer, Subject, combineLatest } from 'rxjs';
 import { map, filter, pluck, mapTo, switchMap, mergeMap, take, tap, withLatestFrom, takeUntil, scan, delay, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
@@ -52,8 +52,11 @@ export class OperatorsComponent implements OnInit {
     // this.thirdScanExample();
     // this.fourthScanExample();
 
-    this.firstWithLatestFromExample();
-    this.secondWithLatestFromExample();
+    // this.firstWithLatestFromExample();
+    // this.secondWithLatestFromExample();
+
+    this.firstCombineLatestExample();
+    this.secondCombineLatestExample();
   }
 
   /**
@@ -412,6 +415,42 @@ export class OperatorsComponent implements OnInit {
       })
     );
     const subscribe = example.subscribe(val => this.addItem(val));
+  }
+
+  /**
+   * combineLatest()
+   */
+  firstCombineLatestExample() {
+    const timerOne$ = timer(1000, 4000);
+    const timerTwo$ = timer(2000, 4000);
+    const timerThree$ = timer(3000, 4000);
+
+    combineLatest(timerOne$, timerTwo$, timerThree$).subscribe(
+      ([timerValOne, timerValTwo, timerValThree]) => {
+        console.log(
+          `Timer One Latest: ${timerValOne},
+          Timer Two Latest: ${timerValTwo},
+          Timer Three Latest: ${timerValThree}`
+        );
+      }
+    );
+  }
+
+  secondCombineLatestExample() {
+    const timerOne$ = timer(1000, 4000);
+    const timerTwo$ = timer(2000, 4000);
+    const timerThree$ = timer(3000, 4000);
+
+    combineLatest(
+      timerOne$,
+      timerTwo$,
+      timerThree$,
+      (one, two, three) => {
+        return `Timer One (Proj) Latest: ${one}, 
+                Timer Two (Proj) Latest: ${two}, 
+                Timer Three (Proj) Latest: ${three}`;
+      }
+    ).subscribe(console.log);
   }
 
   addItem(value: any) {
