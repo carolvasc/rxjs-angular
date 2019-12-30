@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { of, Observable, from, interval, fromEvent, merge, timer } from 'rxjs';
-import { map, filter, pluck, mapTo, switchMap, mergeMap, take, tap, withLatestFrom, takeUntil, scan } from 'rxjs/operators';
+import { of, Observable, from, interval, fromEvent, merge, timer, Subject } from 'rxjs';
+import { map, filter, pluck, mapTo, switchMap, mergeMap, take, tap, withLatestFrom, takeUntil, scan, delay, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-operators',
@@ -44,8 +44,16 @@ export class OperatorsComponent implements OnInit {
     // this.firstTakeExample();
     // this.secondTakeExample();
 
-    this.firstTakeUntilExample();
-    this.secondTakeUntilExample();
+    // this.firstTakeUntilExample();
+    // this.secondTakeUntilExample();
+
+    // this.firstScanExample();
+    // this.secondScanExample();
+    // this.thirdScanExample();
+    // this.fourthScanExample();
+
+    this.firstWithLatestFromExample();
+    this.secondWithLatestFromExample();
   }
 
   /**
@@ -322,6 +330,87 @@ export class OperatorsComponent implements OnInit {
       takeUntil(fiveEvenNumbers)
     );
 
+    const subscribe = example.subscribe(val => this.addItem(val));
+  }
+
+  /**
+   * scan()
+   */
+  firstScanExample() {
+    const source = of(1, 2, 3);
+
+    const example = source.pipe(scan((acc, curr) => acc + curr, 0));
+
+    const subscribe = example.subscribe(val => this.addItem(val));
+  }
+
+  secondScanExample() {
+    const subject = new Subject();
+
+    const example = subject.pipe(
+      scan((acc, curr) => Object.assign({}, acc, curr), {})
+    );
+
+    const subscribe = example.subscribe(val =>
+      console.log('Accumulated object:', val)
+    );
+    //next values into subject, adding properties to object
+    // {name: 'Joe'}
+    subject.next({ name: 'Joe' });
+    // {name: 'Joe', age: 30}
+    subject.next({ age: 30 });
+    // {name: 'Joe', age: 30, favoriteLanguage: 'JavaScript'}
+    subject.next({ favoriteLanguage: 'JavaScript' });
+  }
+
+  thirdScanExample() {
+    const scanObs = interval(1000)
+      .pipe(
+        scan((a: any, c: any) => [...a, c], []),
+        map(r => r[Math.floor(Math.random() * r.length)]),
+        distinctUntilChanged()
+      )
+      .subscribe(this.addItem);
+  }
+
+  fourthScanExample() {
+    const fakeRequest = of('response').pipe(delay(2000));
+
+    interval(1000)
+      .pipe(
+        mergeMap(_ => fakeRequest),
+        scan<string>((all, current) => [...all, current], [])
+      )
+      .subscribe({ next: (val) => this.addItem(val) });
+  }
+
+  /**
+   * withLatestFrom()
+   */
+  firstWithLatestFromExample() {
+    const source = interval(5000);
+
+    const secondSource = interval(1000);
+    const example = source.pipe(
+      withLatestFrom(secondSource),
+      map(([first, second]) => {
+        return `First Source (5s): ${first} Second Source (1s): ${second}`;
+      })
+    );
+    const subscribe = example.subscribe(val => this.addItem(val));
+  }
+
+  secondWithLatestFromExample() {
+    const source = interval(5000);
+
+    const secondSource = interval(1000);
+
+    const example = secondSource.pipe(
+      withLatestFrom(source),
+      map(([first, second]) => {
+        return `Source (1s): ${first} Latest From (5s): ${second}`;
+      })
+    );
     const subscribe = example.subscribe(val => this.addItem(val));
   }
 
