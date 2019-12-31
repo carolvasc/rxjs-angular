@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { of, Observable, from, interval, fromEvent, merge, timer, Subject, combineLatest } from 'rxjs';
+import { of, Observable, from, interval, fromEvent, merge, timer, Subject, combineLatest, race } from 'rxjs';
 import { map, filter, pluck, mapTo, switchMap, mergeMap, take, tap, withLatestFrom, takeUntil, scan, delay, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
@@ -451,6 +451,30 @@ export class OperatorsComponent implements OnInit {
                 Timer Three (Proj) Latest: ${three}`;
       }
     ).subscribe(console.log);
+  }
+
+  firstRaceExample() {
+    const example = race(
+      interval(1500),
+      interval(1000).pipe(<any>mapTo('1s won!')),
+      interval(2000),
+      interval(2500)
+    );
+
+    const subscribe = example.subscribe(val => console.log(val));
+  }
+
+  secondRaceExample() {
+    const first = of('first').pipe(
+      delay(100),
+      map(_ => {
+        throw 'error';
+      })
+    );
+    const second = of('second').pipe(delay(200));
+    const third = of('third').pipe(delay(300));
+
+    race(first, second, third).subscribe(val => console.log(val));
   }
 
   addItem(value: any) {
