@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { of, Observable, from, interval, fromEvent, merge, timer, Subject, combineLatest, race } from 'rxjs';
+import { of, Observable, from, interval, fromEvent, merge, timer, Subject, combineLatest, race, generate } from 'rxjs';
 import { map, filter, pluck, mapTo, switchMap, mergeMap, take, tap, withLatestFrom, takeUntil, scan, delay, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
@@ -55,8 +55,11 @@ export class OperatorsComponent implements OnInit {
     // this.firstWithLatestFromExample();
     // this.secondWithLatestFromExample();
 
-    this.firstCombineLatestExample();
-    this.secondCombineLatestExample();
+    // this.firstCombineLatestExample();
+    // this.secondCombineLatestExample();
+
+    this.firstGenerateExample();
+    this.secondGenerateExample();
   }
 
   /**
@@ -453,6 +456,9 @@ export class OperatorsComponent implements OnInit {
     ).subscribe(console.log);
   }
 
+  /**
+   * race()
+   */
   firstRaceExample() {
     const example = race(
       interval(1500),
@@ -475,6 +481,21 @@ export class OperatorsComponent implements OnInit {
     const third = of('third').pipe(delay(300));
 
     race(first, second, third).subscribe(val => console.log(val));
+  }
+
+  /**
+   * generate()
+   */
+  firstGenerateExample() {
+    generate(2, x => x <= 8, x => x + 3).subscribe(
+      val => this.addItem(val)
+    );
+  }
+
+  secondGenerateExample() {
+    generate(2, x => x <= 38, x => x + 3, x => '.'.repeat(x)).subscribe(
+      val => this.addItem(val)
+    );
   }
 
   addItem(value: any) {
