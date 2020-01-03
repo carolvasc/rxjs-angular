@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { of, Observable, from, interval, fromEvent, merge, timer, Subject, combineLatest, race, generate } from 'rxjs';
-import { map, filter, pluck, mapTo, switchMap, mergeMap, take, tap, withLatestFrom, takeUntil, scan, delay, distinctUntilChanged } from 'rxjs/operators';
+import { map, filter, pluck, mapTo, switchMap, mergeMap, take, tap, withLatestFrom, takeUntil, scan, delay, distinctUntilChanged, bufferTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-operators',
@@ -58,8 +58,11 @@ export class OperatorsComponent implements OnInit {
     // this.firstCombineLatestExample();
     // this.secondCombineLatestExample();
 
-    this.firstGenerateExample();
-    this.secondGenerateExample();
+    // this.firstGenerateExample();
+    // this.secondGenerateExample();
+
+    this.firstBufferTimeExample();
+    this.secondBufferTimeExample();
   }
 
   /**
@@ -496,6 +499,25 @@ export class OperatorsComponent implements OnInit {
     generate(2, x => x <= 38, x => x + 3, x => '.'.repeat(x)).subscribe(
       val => this.addItem(val)
     );
+  }
+
+  /**
+   * bufferTime()
+   */
+  firstBufferTimeExample() {
+    const source = interval(500);
+
+    const example = source.pipe(bufferTime(2000));
+
+    const subscribe = example.subscribe(val => this.addItem('Buffered with Time:' + val));
+  }
+
+  secondBufferTimeExample() {
+    const source = interval(500);
+
+    const example = source.pipe(bufferTime(2000, 1000));
+
+    const subscribe = example.subscribe(val => this.addItem('Start Buffer Every 1s:' + val));
   }
 
   addItem(value: any) {
