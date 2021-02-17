@@ -6,13 +6,15 @@ import { AppComponent } from './app.component';
 import { ObservableComponent } from './observable/observable.component';
 import { OperatorsComponent } from './operators/operators.component';
 import { SubjectComponent } from './subject/subject.component';
+import { PollingComponent } from './polling/polling.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ObservableComponent,
     OperatorsComponent,
-    SubjectComponent
+    SubjectComponent,
+    PollingComponent
   ],
   imports: [
     BrowserModule,
