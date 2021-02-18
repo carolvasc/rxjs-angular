@@ -1,6 +1,15 @@
 import { Component, OnInit } from "@angular/core";
-import { BehaviorSubject, interval, Subject, timer } from "rxjs";
-import { takeUntil, tap } from "rxjs/operators";
+import { interval, Observable, of, Subject } from "rxjs";
+import { exhaustMap, switchMap, takeUntil, tap } from "rxjs/operators";
+
+export enum StatusBackgroundTasks {
+  NotStarted = 0,
+  Started = 1,
+  Cancelled = 2,
+  Concluded = 3,
+  ConcludedWithWarnings = 4,
+  Error = 5,
+}
 
 @Component({
   selector: "app-polling",
@@ -9,22 +18,36 @@ import { takeUntil, tap } from "rxjs/operators";
 })
 export class PollingComponent implements OnInit {
   pollFinished$ = new Subject<void>();
+  backgroundProgress$: Observable<StatusBackgroundTasks> = of(
+    StatusBackgroundTasks.NotStarted,
+    StatusBackgroundTasks.Error,
+    StatusBackgroundTasks.Concluded,
+    StatusBackgroundTasks.ConcludedWithWarnings
+  );
 
   constructor() {}
   ngOnInit() {}
 
   startPolling() {
-    interval(2000)
+    interval(500)
       .pipe(
         takeUntil(this.pollFinished$),
-        tap(() => console.log("tapping"))
+        exhaustMap(() =>
+          this.backgroundProgress$.pipe(
+            tap((val) => console.log(val)),
+            switchMap(async (backgroundTask) =>
+              this.processBackgroundTask(backgroundTask)
+            )
+          )
+        )
       )
       .subscribe(() => {
-        console.log("verifica o status do polling aqui");
+        console.log("entra aqui após ler todos os valores do Observable");
       });
   }
 
-  finishPolling() {
-    this.pollFinished$.next();
+  processBackgroundTask(backgroundTask) {
+    if (backgroundTask === StatusBackgroundTasks.Concluded)
+      this.pollFinished$.next();
   }
 }
