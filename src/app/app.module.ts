@@ -7,6 +7,7 @@ import { ObservableComponent } from './observable/observable.component';
 import { OperatorsComponent } from './operators/operators.component';
 import { SubjectComponent } from './subject/subject.component';
 import { PollingComponent } from './polling/polling.component';
+import { TodoComponent } from './todo/todo.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { PollingComponent } from './polling/polling.component';
     ObservableComponent,
     OperatorsComponent,
     SubjectComponent,
-    PollingComponent
+    PollingComponent,
+    TodoComponent
   ],
   imports: [
     BrowserModule,

@@ -3,6 +3,10 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { distinctUntilChanged } from "rxjs/operators";
 
+/**
+ * Article reference:
+ * https://dev.to/angular/simple-yet-powerful-state-management-in-angular-with-rxjs-4f8g
+ */
 @Injectable({
   providedIn: "root",
 })
