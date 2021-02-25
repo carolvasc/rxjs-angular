@@ -382,17 +382,6 @@ export class OperatorsComponent implements OnInit {
       .subscribe(this.addItem);
   }
 
-  fourthScanExample() {
-    const fakeRequest = of('response').pipe(delay(2000));
-
-    interval(1000)
-      .pipe(
-        mergeMap(_ => fakeRequest),
-        scan<string>((all, current) => [...all, current], [])
-      )
-      .subscribe({ next: (val) => this.addItem(val) });
-  }
-
   /**
    * withLatestFrom()
    */
